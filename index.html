@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>evilgen21 — Apps & Games</title>
+  <meta name="description" content="Приложения и игры от evilgen21: Совет на сегодня, PayCheck, Peg Solitaire"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --text: #c9d1d9;
+      --accent: #58a6ff;
+      --green: #238636;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; text-align: center; position: relative; }
+
+    /* Анимированная аватарка */
+    .avatar-wrapper { display: inline-block; margin-bottom: 24px; }
+    .avatar {
+      width: 140px; height: 140px; border-radius: 50%; border: 5px solid var(--accent);
+      box-shadow: 0 0 30px rgba(88,166,255,0.5), 0 0 60px rgba(88,166,255,0.3);
+      animation: float 6s ease-in-out infinite, glow 4s ease-in-out infinite alternate;
+      transition: all 0.4s ease;
+    }
+    .avatar:hover { transform: scale(1.12) rotate(8deg) !important; box-shadow: 0 0 50px rgba(88,166,255,0.8), 0 0 100px rgba(88,166,255,0.4); }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(2deg); } }
+    @keyframes glow { from { box-shadow: 0 0 30px rgba(88,166,255,0.5), 0 0 60px rgba(88,166,255,0.3); } to { box-shadow: 0 0 40px rgba(88,166,255,0.7), 0 0 90px rgba(88,166,255,0.4); } }
+
+    h1 { font-size: 3rem; margin-bottom: 1rem; background: linear-gradient(90deg, #58a6ff, #ffffff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    p.subtitle { font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.8; }
+
+    .lang-switch { position: absolute; top: 20px; right: 20px; background: var(--card); padding: 8px 12px; border-radius: 30px; display: flex; gap: 8px; font-size: 0.9rem; z-index: 10; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    .lang-btn { padding: 6px 12px; border-radius: 20px; cursor: pointer; transition: all 0.3s; }
+    .lang-btn.active { background: var(--accent); color: white; }
+
+    /* ───── КРУТЫЕ АНИМИРОВАННЫЕ КАРТОЧКИ ───── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 40px;
+      margin-top: 60px;
+      perspective: 1500px; /* для 3D-эффекта */
+    }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transform: translateY(100px) rotateX(15deg);
+      opacity: 0;
+      animation: cardAppear 0.9s ease-out forwards;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(135deg, rgba(88,166,255,0.15), transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+      border-radius: 20px;
+    }
+    .card:hover::before { opacity: 1; }
+
+    /* 3D-поворот при наведении */
+    .card:hover {
+      transform: translateY(-20px) rotateX(5deg) rotateY(10deg) scale(1.03);
+      box-shadow: 0 30px 60px rgba(88,166,255,0.25), 0 15px 35px rgba(0,0,0,0.6);
+    }
+
+    .card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .card:hover img {
+      transform: scale(1.1);
+    }
+
+    .content { padding: 28px; }
+    .card h2 { font-size: 1.6rem; margin-bottom: 12px; color: white; }
+    .card p { font-size: 0.98rem; margin-bottom: 24px; opacity: 0.9; }
+    .buttons { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn { padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-green { background: var(--green); color: #fff; }
+    .btn-secondary { background: #30363d; color: var(--text); }
+    .btn:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+
+    /* Анимация появления карточек */
+    @keyframes cardAppear {
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+      }
+    }
+    .card:nth-child(1) { animation-delay: 0.2s; }
+    .card:nth-child(2) { animation-delay: 0.4s; }
+    .card:nth-child(3) { animation-delay: 0.6s; }
+
+    footer { margin-top: 120px; padding: 30px; font-size: 0.9rem; opacity: 0.6; }
+  </style>
+</head>
+<body>
+
+  <div class="lang-switch">
+    <div class="lang-btn active" data-lang="ru">РУС</div>
+    <div class="lang-btn" data-lang="en">ENG</div>
+  </div>
+
+  <div class="container">
+    <div class="avatar-wrapper">
+      <img src="https://avatars.githubusercontent.com/u/158317302?v=4" alt="evilgen21" class="avatar">
+    </div>
+    <h1>evilgen21</h1>
+    <p class="subtitle" data-ru="Мои приложения и игры, сделанные с душой" data-en="My apps and games made with love">
+      Мои приложения и игры, сделанные с душой
+    </p>
+
+    <div class="grid">
+      <!-- Совет на сегодня -->
+      <div class="card">
+        <img src="https://camo.githubusercontent.com/ce098adf5f397dbdb24a96c1c14658af0fe42b52be31b3ebae6a917396dd615b/68747470733a2f2f6973312d73736c2e6d7a7374617469632e636f6d2f696d6167652f7468756d622f507572706c65536f757263653231312f76342f64352f61642f34332f64356164343330632d663537342d306234372d363332312d6537343739393261613435622f39653965633736322d646462362d346538352d383639302d3566663464366538653531335f312e6a70672f3436307830772e77656270" alt="Совет на сегодня">
+        <div class="content">
+          <h2 data-ru="Совет на сегодня" data-en="Daily Soviet Advice">Совет на сегодня</h2>
+          <p data-ru="Ежедневные мудрые и смешные советы из эпохи СССР и не только. Никогда не повторяется!" data-en="Daily wise and funny advice from the USSR era and beyond. Never repeats!"></p>
+          <div class="buttons">
+            <a href="https://evilgen21.github.io/sovetToday/" class="btn btn-primary" data-ru="Открыть приложение" data-en="Open App">Открыть приложение</a>
+            <a href="https://github.com/evilgen21/sovetToday" class="btn btn-secondary">GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- PayCheck -->
+      <div class="card">
+        <img src="https://github.com/evilgen21/PayCheck/blob/main/1.png?raw=true" alt="PayCheck">
+        <div class="content">
+          <h2>PayCheck</h2>
+          <p data-ru="Простой и удобный калькулятор зарплаты и рабочего времени" data-en="Simple and convenient salary and work time calculator"></p>
+          <div class="buttons">
+            <a href="https://evilgen21.github.io/PayCheck/" class="btn btn-primary" data-ru="Открыть приложение" data-en="Open App">Открыть приложение</a>
+            <a href="https://github.com/evilgen21/PayCheck" class="btn btn-secondary">GitHub</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Peg Solitaire -->
+      <div class="card">
+        <img src="https://github.com/evilgen21/Peg-Solitaire/blob/main/1.png?raw=true" alt="Peg Solitaire">
+        <div class="content">
+          <h2 data-ru="Peg Solitaire (Пеги)" data-en="Peg Solitaire">Peg Solitaire (Пеги)</h2>
+          <p data-ru="Классическая логическая игра-головоломка. Остаться должен только один штырь!" data-en="Classic logic puzzle game. Only one peg should remain!"></p>
+          <div class="buttons">
+            <a href="https://evilgen21.github.io/Peg-Solitaire/" class="btn btn-green" data-ru="Играть сейчас" data-en="Play Now">Играть сейчас</a>
+            <a href="https://github.com/evilgen21/Peg-Solitaire" class="btn btn-secondary">GitHub</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      © 2025 evilgen21 · <span data-ru="Все проекты с открытым исходным кодом" data-en="All projects are open source">Все проекты с открытым исходным кодом</span> · 
+      <a href="https://github.com/evilgen21" style="color:var(--accent);">GitHub</a>
+    </footer>
+  </div>
+
+  <script>
+    const langBtns = document.querySelectorAll('.lang-btn');
+    const translatable = document.querySelectorAll('[data-ru][data-en]');
+
+    langBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.dataset.lang;
+        langBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.documentElement.lang = lang;
+
+        translatable.forEach(el => {
+          el.textContent = el.dataset[lang];
+        });
+
+        document.querySelectorAll('.btn-primary, .btn-green').forEach(b => {
+          if (b.href.includes('Peg-Solitaire')) {
+            b.textContent = lang === 'ru' ? 'Играть сейчас' : 'Play Now';
+          } else {
+            b.textContent = lang === 'ru' ? 'Открыть приложение' : 'Open App';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
